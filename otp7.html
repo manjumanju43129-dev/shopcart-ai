@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Food Order OTP</title>
+  <!-- Load script with defer to improve performance -->
+  <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js" defer></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #f4f4f4;
+    }
+
+    .container {
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      width: 90%;
+      max-width: 400px;
+      text-align: center;
+    }
+
+    h2 {
+      margin-bottom: 20px;
+      font-size: 24px;
+      color: #333;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+
+    button {
+      width: 100%;
+      padding: 10px;
+      background-color: #007BFF;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 600px) {
+      body {
+        padding: 10px;
+      }
+
+      .container {
+        padding: 15px;
+        font-size: 14px;
+      }
+
+      h2 {
+        font-size: 20px;
+      }
+
+      input, button {
+        font-size: 12px;
+        padding: 8px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Food Order OTP Verification</h2>
+
+    <!-- Section 1: Send OTP -->
+    <div>
+      <input type="email" id="email" placeholder="Enter your email" required />
+      <button onclick="sendOTP()">Send OTP</button>
+    </div>
+
+    <br>
+
+    <!-- Section 2: Verify OTP -->
+    <div>
+      <input type="text" id="userOtp" placeholder="Enter 6-digit OTP" />
+      <button onclick="verifyOTP()">Verify OTP</button>
+    </div>
+  </div>
+
+  <script>
+    // Initialize EmailJS
+    window.onload = function() {
+      emailjs.init("sadPEAQ6yPPGq_pbK");
+    };
+
+    let generatedOtp = "";
+    let otpExpiry = 0;
+
+    function sendOTP() {
+      const emailInput = document.getElementById("email");
+
+      if (!emailInput) {
+        console.error("Email input field not found in the DOM.");
+        alert("Email input field is missing. Please check the HTML structure.");
+        return;
+      }
+
+      const email = emailInput.value.trim();
+      console.log("Email entered:", email); // Debugging log
+
+      if (!email) {
+        alert("Please enter your email!");
+        return;
+      }
+
+      // Generate 6-digit OTP
+      generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
+      otpExpiry = Date.now() + 5 * 60 * 1000; // 5 minutes
+
+      const emailData = {
+        email: email, // Updated to match the template variable
+        passcode: generatedOtp // Updated to match the template variable
+      };
+
+      console.log("Data being sent to EmailJS:", emailData); // Debugging log
+
+      emailjs.send("service_paghgbi", "template_40s0dto", emailData)
+      .then(() => {
+        alert("OTP sent successfully! Check your email.");
+      })
+      .catch((error) => {
+        console.error("Failed to send OTP:", error); // Debugging log
+        alert(`Failed to send OTP: ${error.text}`);
+        if (error.status === 422) {
+          alert("Please check your EmailJS template configuration. Ensure 'email' and 'passcode' are mapped correctly in the template.");
+        }
+      });
+    }
+
+    function verifyOTP() {
+      const otpInput = document.getElementById("userOtp");
+
+      if (!otpInput) {
+        console.error("Input element 'userOtp' not found in DOM");
+        return;
+      }
+
+      const userOtp = otpInput.value;
+
+      if (!userOtp) {
+        alert("Please enter the OTP!");
+        return;
+      }
+
+      if (Date.now() > otpExpiry) {
+        alert("OTP expired! Please request a new one.");
+        return;
+      }
+
+      if (userOtp === generatedOtp) {
+        alert("OTP Verified ✅ Order Confirmed 🍔");
+        generatedOtp = ""; // Clear after use
+      } else {
+        alert("Invalid OTP ❌ Try again.");
+      }
+    }
+  </script>
+</body>
+</html>

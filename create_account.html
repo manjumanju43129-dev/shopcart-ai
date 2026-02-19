@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Account</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #232526 0%, #414345 100%);
+            font-family: 'Montserrat', Arial, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .glassy-form {
+            background: rgba(44, 62, 80, 0.7);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            backdrop-filter: blur(8px);
+            border-radius: 20px;
+            padding: 40px 32px;
+            width: 400px;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+        .glassy-form h2 {
+            font-family: 'Montserrat', Arial, sans-serif;
+            font-weight: 700;
+            font-size: 2rem;
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+        }
+        .glassy-form input {
+            background: rgba(255,255,255,0.15);
+            border: none;
+            border-radius: 8px;
+            padding: 12px;
+            color: #fff;
+            font-size: 1rem;
+            margin-bottom: 8px;
+            outline: none;
+            font-family: 'Montserrat', Arial, sans-serif;
+        }
+        .glassy-form input::placeholder {
+            color: #b2bec3;
+        }
+        .glassy-form button {
+            background: linear-gradient(90deg, #2980b9 0%, #6dd5fa 100%);
+            border: none;
+            border-radius: 8px;
+            padding: 12px;
+            color: #fff;
+            font-size: 1.1rem;
+            font-family: 'Montserrat', Arial, sans-serif;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .glassy-form button:hover {
+            background: linear-gradient(90deg, #6dd5fa 0%, #2980b9 100%);
+        }
+        .privacy {
+            font-size: 0.9rem;
+            color: #b2bec3;
+            margin-top: 8px;
+        }
+        .privacy a {
+            color: #6dd5fa;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+        <div class="container">
+            <form class="glassy-form" id="createAccountForm">
+                <h2>Create Account</h2>
+                <input type="email" name="email" placeholder="Email" required />
+                <input type="password" name="password" placeholder="Password" required minlength="6" />
+                <input type="password" name="confirm_password" placeholder="Confirm Password" required minlength="6" />
+                <button type="submit">Create Account</button>
+                <p id="errorMsg" style="color:red;"></p>
+                <p id="successMsg" style="color:green;"></p>
+                <p>Already have an account? <a href="signin.html">Sign in</a></p>
+            </form>
+        </div>
+        <script>
+        document.getElementById('createAccountForm').onsubmit = async function(e) {
+            e.preventDefault();
+            const form = e.target;
+            const email = form.email.value.trim();
+            const password = form.password.value;
+            const confirm = form.confirm_password.value;
+            const errorMsg = document.getElementById('errorMsg');
+            const successMsg = document.getElementById('successMsg');
+            errorMsg.textContent = '';
+            successMsg.textContent = '';
+            if (password !== confirm) {
+                errorMsg.textContent = 'Passwords do not match.';
+                return;
+            }
+            const resp = await fetch('/api/register', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({email, password})
+            });
+            const data = await resp.json();
+            if (resp.ok) {
+                successMsg.textContent = 'Account created! You can now sign in.';
+                form.reset();
+            } else {
+                errorMsg.textContent = data.error || 'Registration failed.';
+            }
+        };
+        </script>
+</body>
+</html>

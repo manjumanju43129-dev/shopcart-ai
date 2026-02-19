@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>MyShop — Online Shopping</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand" id="brand">MyShop</div>
+    <div class="search-area">
+      <input id="search" placeholder="Search for products, brands and more" aria-label="Search" />
+      <button id="searchBtn" aria-label="Search">Search</button>
+    </div>
+    <div class="top-actions">
+      <button id="loginBtn" class="btn-link">Login</button>
+      <button id="becomeSeller" class="btn-link">Become a Seller</button>
+      <button id="cartToggle" class="cart-btn" aria-label="Open cart">🛒 <span id="cartCount">0</span></button>
+      <div id="profileMenu" class="profile">Guest</div>
+    </div>
+  </header>
+
+    <!-- Sign-in modal removed per request -->
+    <script>
+    // Attach login/create handlers only if the related elements exist
+    (function(){
+      const createLink = document.getElementById('createAccountLink');
+      const backLink = document.getElementById('backToLoginLink');
+      const createForm = document.getElementById('createAccountForm');
+      const signinForm = document.getElementById('signinForm');
+      if(createLink && signinForm && createForm){
+        createLink.onclick = function(e){ e.preventDefault(); signinForm.style.display='none'; createForm.style.display=''; };
+      }
+      if(backLink && signinForm && createForm){
+        backLink.onclick = function(e){ e.preventDefault(); createForm.style.display='none'; signinForm.style.display=''; };
+      }
+      if(createForm){
+        createForm.onsubmit = async function(e){
+          e.preventDefault();
+          const emailEl = document.getElementById('registerEmail');
+          const pwdEl = document.getElementById('registerPassword');
+          const confirmEl = document.getElementById('registerConfirm');
+          const errorMsg = document.getElementById('registerError');
+          const successMsg = document.getElementById('registerSuccess');
+          if(!emailEl || !pwdEl || !confirmEl) return;
+          const email = emailEl.value.trim(); const password = pwdEl.value; const confirm = confirmEl.value;
+          if (password !== confirm) { if(errorMsg) errorMsg.textContent='Passwords do not match.'; return; }
+          const resp = await fetch('/api/register', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({email,password}) });
+          const data = await resp.json();
+          if(resp.ok){ if(successMsg) successMsg.textContent='Account created!'; createForm.reset(); } else { if(errorMsg) errorMsg.textContent = data.error || 'Registration failed.'; }
+        };
+      }
+      if(signinForm){
+        signinForm.onsubmit = async function(e){
+          e.preventDefault();
+          const emailEl = document.getElementById('loginEmail');
+          const pwdEl = document.getElementById('loginPassword');
+          const msg = document.getElementById('loginMsg');
+          if(!emailEl || !pwdEl) return;
+          const email = emailEl.value.trim(); const password = pwdEl.value;
+          const resp = await fetch('/api/login', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({email,password}) });
+          const data = await resp.json();
+          if(resp.ok){ if(msg){ msg.style.color='green'; msg.textContent='Login successful!'; } if(data.access_token) { localStorage.setItem('access_token', data.access_token); } }
+          else { if(msg){ msg.style.color='red'; msg.textContent = data.error || 'Login failed.'; } }
+        };
+      }
+    })();
+    </script>
+  <main class="container">
+    <aside class="left-column">
+      <section class="categories">
+        <h3>Shop by Category</h3>
+        <div class="cat-grid" id="categories">
+          <!-- Categories will be dynamically rendered -->
+        </div>
+      </section>
+    </aside>
+
+    <section class="content">
+      <div class="hero">
+        <h1>Big Sale — Up to 50% OFF</h1>
+        <p>Discover deals across Electronics, Fashion, Home & more. Free delivery on select orders.</p>
+      </div>
+
+      <section id="restaurants" class="restaurant-grid" aria-live="polite">
+        <!-- product cards rendered here -->
+      </section>
+    </section>
+
+    <aside class="cart-sidebar hidden" id="cartSidebar">
+      <div class="cart-header">
+        <h3>Your Cart</h3>
+        <button id="closeCart">✖</button>
+      </div>
+      <div id="cartItems" class="cart-items">
+        <!-- items -->
+      </div>
+      <div class="cart-footer">
+        <div class="totals">
+          <div>Subtotal: <span id="subtotal">₹0</span></div>
+          <div>Tax (5%): <span id="tax">₹0</span></div>
+          <div class="grand">Total: <span id="total">₹0</span></div>
+        </div>
+        <button id="checkoutBtn" class="primary">Checkout & Print Invoice</button>
+      </div>
+    </aside>
+  </main>
+
+  
+  <!-- Product Detail Modal -->
+  <div id="productDetailModal" class="menu-modal hidden" role="dialog" aria-modal="true">
+    <div class="menu-panel" style="max-width:820px">
+      <div class="menu-header" style="display:flex;justify-content:space-between;align-items:center">
+        <h2 id="productTitle">Product</h2>
+        <button id="closeProductDetail">✖</button>
+      </div>
+      <div id="productDetailBody" style="display:flex;gap:18px;align-items:flex-start">
+        <div style="flex:0 0 320px">
+          <img id="productDetailImage" src="" alt="" style="width:100%;border-radius:8px" />
+        </div>
+        <div style="flex:1">
+          <div id="productDetailDesc" style="margin-bottom:12px;color:var(--muted)"></div>
+          <div id="productDetailPrice" style="font-weight:800;font-size:1.1rem;margin-bottom:10px"></div>
+          <div style="margin-bottom:12px"><button id="productAddBtn" class="add-btn">Add to Cart</button></div>
+          <h4 style="margin:8px 0">Reviews</h4>
+          <div id="productReviews" style="max-height:260px;overflow:auto;color:var(--muted)">Loading reviews…</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Audio hooks (replace files in assets/sfx/) -->
+  <audio id="sfxClick" src="assets/sfx/click.mp3" preload="auto"></audio>
+  <audio id="sfxAdd" src="assets/sfx/add.mp3" preload="auto"></audio>
+  <audio id="sfxSuccess" src="assets/sfx/success.mp3" preload="auto"></audio>
+
+  <!-- Runtime admin control (hidden by default). JS will toggle visibility with Ctrl+Shift+Z -->
+  <button id="adminControlBtn" class="hidden" title="Admin" aria-hidden="true">Admin</button>
+
+  <!-- In-page print container used by scripts to render invoice before calling print() -->
+  <div id="printInvoice" class="hidden" aria-hidden="true"></div>
+
+  <!-- Photo editor modal removed (admin image editor handled via API) -->
+
+  <footer>
+    <div class="footer-inner">
+      <div>
+        <h4>MyShop</h4>
+        <p>Shop the latest products across categories — fast delivery, easy returns.</p>
+      </div>
+      <div>
+        <h4>Help</h4>
+        <p><a href="#">Customer Care</a></p>
+        <p><a href="#">Returns & Refunds</a></p>
+      </div>
+      <div>
+        <h4>About</h4>
+        <p><a href="#">About Us</a></p>
+        <p><a href="#">Careers</a></p>
+      </div>
+      <div>
+        <h4>Policies</h4>
+        <p><a href="#">Privacy Policy</a></p>
+        <p><a href="#">Terms of Use</a></p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="scripts.js"></script>
+  <script src="register.js"></script>
+</body>
+</html>

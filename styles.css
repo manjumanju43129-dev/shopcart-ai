@@ -1,0 +1,268 @@
+from flask import Flask, send_from_directory
+
+app = Flask(__name__, static_folder='.')
+
+@app.route('/')
+def serve_index():
+    return send_from_directory('.', 'index.html')
+
+@app.route('/<path:path>')
+def serve_file(path):
+    return send_from_directory('.', path)
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=10000, debug=True)/* Flipkart-inspired E-commerce Theme
+   - Primary blue: #2874F0
+   - Accent (buy): #FB641B
+   - Soft background: #F1F3F6
+   - Clean product cards, responsive grid
+*/
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+
+:root{
+  --primary: #2874F0;
+  --accent: #FB641B;
+  --bg: #F1F3F6;
+  --card-bg: #ffffff;
+  --muted: #64748b;
+  --text: #0f172a;
+  --shadow: 0 8px 24px rgba(16,24,40,0.06);
+  --radius: 10px;
+}pip install -r requirements.txt
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0; font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, Arial;
+  color:var(--text); background:var(--bg); -webkit-font-smoothing:antialiased;
+}
+
+/* Navbar */
+.topbar{ position:sticky; top:0; z-index:90; display:flex; align-items:center; gap:16px; padding:10px 18px; background:var(--primary); color:#fff; box-shadow: 0 2px 6px rgba(15,23,42,0.12) }
+.brand{ font-weight:800; font-size:1.15rem; color:#fff; margin-right:8px }
+.search-area{ flex:1; display:flex; justify-content:center }
+.search-area input{ width:min(720px,62%); padding:10px 14px; border-radius:999px; border:none; outline:none; background:#fff; color:var(--text); font-size:0.95rem }
+.search-area button{ margin-left:10px; padding:10px 14px; border-radius:999px; border:none; background:var(--accent); color:#fff; cursor:pointer }
+.top-actions{ display:flex; align-items:center; gap:10px }
+.top-actions .btn-link{ background:transparent; color:#fff; border:none; cursor:pointer; padding:6px 8px }
+.cart-btn{ background:rgba(255,255,255,0.08); color:#fff; border:none; padding:8px 12px; border-radius:8px; display:flex; align-items:center; gap:8px }
+.profile{ color:#fff; padding:6px 10px }
+
+/* Page layout */
+.container{ max-width:1200px; margin:20px auto; padding:0 18px; display:flex; gap:20px }
+.left-column{ width:260px }
+.content{ flex:1 }
+
+/* Hero banner */
+.hero{ background:linear-gradient(90deg, rgba(40,116,240,0.08), rgba(251,100,27,0.03)); padding:22px; border-radius:10px; margin-bottom:18px; box-shadow:var(--shadow) }
+.hero h1{ margin:0; font-size:1.8rem; color:var(--primary) }
+.hero p{ margin:6px 0 0 0; color:var(--muted) }
+
+/* Categories (left) */
+.categories h3{ margin:0 0 10px 0; color:var(--text) }
+.cat-grid{ display:grid; grid-template-columns:repeat(1,1fr); gap:10px }
+.cat-item{ background:var(--card-bg); padding:10px; border-radius:8px; text-align:left; font-weight:600; color:var(--text); box-shadow:var(--shadow); cursor:pointer }
+
+/* Product grid */
+.restaurant-grid{ display:grid; gap:18px; grid-template-columns: repeat(4, 1fr) }
+.card{ background:var(--card-bg); padding:12px; border-radius:10px; box-shadow:var(--shadow); transition:transform .18s ease; display:flex; flex-direction:column }
+.card img{ width:100%; height:160px; object-fit:contain; border-radius:8px; background:#f8fafc }
+.card .meta{ display:flex; justify-content:space-between; align-items:center; margin-top:8px }
+.card .desc{ color:var(--muted); font-size:0.9rem }
+.badge{ background:#ecf8ff; color:var(--primary); padding:6px 8px; border-radius:8px; font-weight:700 }
+.card:hover{ transform:translateY(-6px) }
+
+.price-row{ display:flex; align-items:center; justify-content:space-between; margin-top:10px }
+.price{ font-weight:800; font-size:1.05rem }
+.old-price{ text-decoration:line-through; color:var(--muted); margin-left:8px; font-weight:600 }
+.discount{ color:green; font-weight:700; margin-left:6px }
+.add-btn{ margin-top:10px; background:var(--accent); color:#fff; border:none; padding:10px 12px; border-radius:8px; cursor:pointer }
+.buy-btn{ margin-top:6px; background:var(--primary); color:#fff; border:none; padding:10px 12px; border-radius:8px; cursor:pointer }
+
+/* Cart sidebar */
+.cart-sidebar{ width:360px; background:var(--card-bg); padding:14px; border-radius:10px; box-shadow:var(--shadow) }
+.cart-header{ display:flex; justify-content:space-between; align-items:center }
+.cart-items{ margin-top:12px }
+.cart-row{ display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid #f1f5f9 }
+.cart-footer{ margin-top:12px }
+.totals div{ margin-bottom:6px }
+.primary{ background:var(--primary); color:#fff; border:none; padding:10px 12px; border-radius:8px; cursor:pointer }
+
+/* Modal */
+.menu-modal{ position:fixed; inset:0; display:flex; align-items:center; justify-content:center; z-index:90 }
+.menu-modal.hidden{ display:none }
+.menu-panel{ width:min(760px,96%); background:var(--card-bg); border-radius:12px; padding:16px; box-shadow:var(--shadow) }
+
+/* Footer */
+footer{ margin-top:28px; padding:28px 18px; color:var(--muted) }
+
+/* Responsive */
+@media (max-width:1024px){ .container{ padding:0 16px } .left-column{ display:none } .restaurant-grid{ grid-template-columns: repeat(2, 1fr) } }
+@media (max-width:620px){ .search-area input{ width:68% } .restaurant-grid{ grid-template-columns: 1fr } .card img{ height:220px } .topbar{ padding:10px } }
+
+.hidden{ display:none }
+
+/* small utilities */
+.btn-link{ background:transparent; color:#fff; border:none }
+
+/* end */
+
+<link rel="stylesheet" href="styles.css">
+<script src="script.js"></script>
+
+/* General styles */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+    color: #333;
+}
+
+/* Header styles */
+header {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+}
+
+/* Navigation styles */
+nav ul {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    background-color: #333;
+}
+
+nav ul li {
+    margin: 0 15px;
+}
+
+nav ul li a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+nav ul li a:hover {
+    text-decoration: underline;
+}
+
+/* Product grid styles */
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    padding: 20px;
+}
+
+.product {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 15px;
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.product img {
+    max-width: 100%;
+    height: auto;
+    border-bottom: 1px solid #ddd;
+    margin-bottom: 10px;
+}
+
+.product h3 {
+    font-size: 1.2em;
+    margin: 10px 0;
+}
+
+.product p {
+    font-size: 0.9em;
+    color: #666;
+}
+
+.product .price {
+    font-size: 1.1em;
+    color: #007bff;
+    font-weight: bold;
+}
+
+/* Unique theme styles */
+body {
+    background: linear-gradient(to right, #ff7e5f, #feb47b);
+    color: #fff;
+}
+
+header {
+    background-color: #ff6f61;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+nav ul {
+    background-color: #ff6f61;
+}
+
+nav ul li a {
+    color: #fff;
+}
+
+nav ul li a:hover {
+    color: #feb47b;
+}
+
+.product {
+    background: rgba(255, 255, 255, 0.9);
+    color: #333;
+}
+
+.product .price {
+    color: #ff6f61;
+}
+
+/* Hide My Shop Diagnostics and products loaded elements */
+.my-shop-diagnostics {
+    display: none;
+}
+
+.products-loaded {
+    display: none;
+}
+
+/* Update styles for a modern layout */
+
+/* Add a carousel for featured images */
+.carousel {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    gap: 10px;
+    padding: 10px;
+}
+
+.carousel img {
+    width: 100%;
+    height: auto;
+    scroll-snap-align: center;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Add hover effects for product images */
+.product img:hover {
+    transform: scale(1.05);
+    transition: transform 0.3s ease;
+}
+
+/* Add a loading spinner for images */
+img.loading {
+    filter: blur(10px);
+    transition: filter 0.3s ease;
+}
+
+img.loaded {
+    filter: none;
+}
