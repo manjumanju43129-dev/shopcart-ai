@@ -2,7 +2,7 @@
 """
 Download product images using Unsplash Search API and save to uploads folder.
 Usage:
-  python download_unsplash_images.py --access-key <KEY> [--dry-run] [--limit N] [--delay 0.5] [--batch 50]
+  python download_unsplash_images.py --query <QUERY> [--dry-run] [--limit N] [--delay 0.5] [--batch 50]
 
 Notes:
 - This will perform a search per product using product name and category.
@@ -22,12 +22,19 @@ from PIL import Image
 import requests
 from io import BytesIO
 
-parser = argparse.ArgumentParser()
-parser.add_argument('--access-key', required=True, help='Unsplash Access Key')
-parser.add_argument('--dry-run', action='store_true')
-parser.add_argument('--limit', type=int, default=0)
-parser.add_argument('--delay', type=float, default=0.5)
-parser.add_argument('--batch', type=int, default=50)
+# Updated to use the provided render key directly
+RENDER_KEY = "4f0ddf6d6f2ba107b0e7141bb95f5019"
+
+parser = argparse.ArgumentParser(description='Download images from Unsplash based on a search query.')
+parser.add_argument('--query', required=True, help='Search query for Unsplash images')
+parser.add_argument('--dry-run', action='store_true', help='Simulate the download process without saving files')
+parser.add_argument('--limit', type=int, default=10, help='Maximum number of images to download')
+parser.add_argument('--delay', type=float, default=0.5, help='Delay between API requests (in seconds)')
+parser.add_argument('--batch', type=int, default=50, help='Number of images to fetch per API request')
+
+# Update the headers to use the RENDER_KEY
+headers = {'Authorization': f'Client-ID {RENDER_KEY}'}
+
 args = parser.parse_args()
 
 app = create_app()
@@ -40,7 +47,6 @@ with app.app_context():
     limit = args.limit or total
     print(f'Total products: {total}, will process: {limit}')
 
-    headers = {'Authorization': f'Client-ID {args.access_key}'}
     processed = 0
     updated = 0
 
